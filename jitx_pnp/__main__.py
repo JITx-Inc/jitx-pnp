@@ -33,8 +33,8 @@ def main():
         "--split-sides",
         action="store_true",
         help=(
-            "Write separate files per board side (<stem>_a.<ext> and "
-            "<stem>_b.<ext>) instead of a single file with a Side column. "
+            "Write separate files per board side (<stem>_top.<ext> and "
+            "<stem>_bottom.<ext>) instead of a single file with a Side column. "
             "Requires --output."
         ),
     )
