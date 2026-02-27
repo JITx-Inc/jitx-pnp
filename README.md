@@ -48,8 +48,8 @@ python -m jitx_pnp board.xml
 
 ```
 RefDes,X,Y,Rotation,PN,Package,Side
-C1,63.457,110.056,90.000,CGA2B3X7R1H103M050BB,Pkg0402$37,Top
-C10,39.292,70.994,90.000,04023D105KAT2A,Pkg0402$47,Top
+C1,63.457,110.056,90.000,CGA2B3X7R1H103M050BB,Pkg0402,Top
+C10,39.292,70.994,90.000,04023D105KAT2A,Pkg0402,Top
 ...
 ```
 
@@ -74,8 +74,8 @@ python -m jitx_pnp board.xml -f txt
 ```
 REF DES  X COORD  Y COORD  ROT      PN                     PACKAGE                   SIDE
 -------  -------  -------  -------  ---------------------  ------------------------  ------
-C1       63.457   110.056  90.000   CGA2B3X7R1H103M050BB   Pkg0402$37                Top
-C10      39.292   70.994   90.000   04023D105KAT2A         Pkg0402$47                Top
+C1       63.457   110.056  90.000   CGA2B3X7R1H103M050BB   Pkg0402  Top
+C10      39.292   70.994   90.000   04023D105KAT2A         Pkg0402  Top
 ...
 ```
 
