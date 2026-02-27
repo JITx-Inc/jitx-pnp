@@ -1,10 +1,60 @@
 import csv
 import io
 import logging
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 log = logging.getLogger(__name__)
+
+_NATURAL_SORT_RE = re.compile(r"(\d+)")
+
+
+def _natural_sort_key(value: str) -> list[str | int]:
+    """Split a string into text and integer parts for natural sorting.
+
+    "C2" -> ["C", 2], "C10" -> ["C", 10], so C2 sorts before C10.
+    """
+    parts: list[str | int] = []
+    for piece in _NATURAL_SORT_RE.split(value):
+        if piece.isdigit():
+            parts.append(int(piece))
+        else:
+            parts.append(piece)
+    return parts
+
+
+def _safe_float(value: str | None, default: float = 0.0) -> float:
+    """Convert a string to float, returning default on failure."""
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except ValueError:
+        return default
+
+
+def _sanitize_csv_field(value: str) -> str:
+    """Prevent CSV injection by escaping leading formula characters.
+
+    Spreadsheet tools interpret cells starting with =, +, -, or @
+    as formulas. Prefix with a single quote to force text interpretation.
+    """
+    if value and value[0] in ("=", "+", "-", "@"):
+        return "'" + value
+    return value
+
+
+def _normalize_side(side: str) -> str:
+    """Normalize board side values to 'Top' or 'Bottom'."""
+    lower = side.strip().lower()
+    if lower == "top":
+        return "Top"
+    elif lower == "bottom":
+        return "Bottom"
+    else:
+        log.warning("Unrecognized board side '%s', defaulting to 'Top'", side)
+        return "Top"
 
 
 def _parse_instances(xml_path: Path) -> list[dict[str, str]]:
@@ -23,16 +73,16 @@ def _parse_instances(xml_path: Path) -> list[dict[str, str]]:
     if board is None:
         raise ValueError(f"No <BOARD> element found in {xml_path}")
 
-    # Build a designator -> {MPN, Manufacturer} map from schematic data.
-    props_map: dict[str, dict[str, str]] = {}
+    # Build a designator -> MPN map from schematic data.
+    # Only store the first occurrence per designator (multi-unit components
+    # may have multiple SCH-INST entries sharing the same designator).
+    props_map: dict[str, str] = {}
     for sch_inst in root.iter("SCH-INST"):
         props = sch_inst.find("PROPS")
         if props is not None:
             desig = props.get("DESIGNATOR")
-            if desig:
-                props_map[desig] = {
-                    "MPN": props.get("MPN", ""),
-                }
+            if desig and desig not in props_map:
+                props_map[desig] = props.get("MPN", "")
 
     rows: list[dict[str, str]] = []
     for inst in board.findall("INST"):
@@ -41,7 +91,7 @@ def _parse_instances(xml_path: Path) -> list[dict[str, str]]:
             log.warning("Skipping INST with no DESIGNATOR attribute")
             continue
 
-        side = inst.get("SIDE", "Top")
+        side = _normalize_side(inst.get("SIDE", "Top"))
         package = inst.get("PACKAGE", "")
 
         pose = inst.find("POSE")
@@ -49,11 +99,9 @@ def _parse_instances(xml_path: Path) -> list[dict[str, str]]:
             log.warning("Skipping %s: no POSE element", designator)
             continue
 
-        x = float(pose.get("X", "0"))
-        y = float(pose.get("Y", "0"))
-        angle = float(pose.get("ANGLE", "0"))
-
-        sch_props = props_map.get(designator, {})
+        x = _safe_float(pose.get("X"))
+        y = _safe_float(pose.get("Y"))
+        angle = _safe_float(pose.get("ANGLE"))
 
         rows.append(
             {
@@ -61,13 +109,16 @@ def _parse_instances(xml_path: Path) -> list[dict[str, str]]:
                 "X": f"{x:.3f}",
                 "Y": f"{y:.3f}",
                 "Rotation": f"{angle:.3f}",
-                "PN": sch_props.get("MPN", ""),
-                "Package": package,
+                "PN": _sanitize_csv_field(props_map.get(designator, "")),
+                "Package": _sanitize_csv_field(package.split("$")[0]),
                 "Side": side,
             }
         )
 
-    rows.sort(key=lambda r: r["RefDes"])
+    if not rows:
+        log.warning("No component instances found in %s", xml_path)
+
+    rows.sort(key=lambda r: _natural_sort_key(r["RefDes"]))
     return rows
 
 
