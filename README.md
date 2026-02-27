@@ -21,8 +21,10 @@ pick-and-place file listing every component's placement data:
 
 Requires Python 3.12+.
 
+Install directly from GitHub:
+
 ```bash
-pip install jitx-pnp
+pip install git+https://github.com/JITx-Inc/jitx-pnp.git
 ```
 
 For development:
@@ -32,6 +34,9 @@ git clone https://github.com/JITx-Inc/jitx-pnp.git
 cd jitx-pnp
 pip install -e .
 ```
+
+> **Note:** This package will be published to PyPI in the future. Once
+> available, you will be able to install it with `pip install jitx-pnp`.
 
 ## Exporting XML from JITX
 
