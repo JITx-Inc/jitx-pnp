@@ -1,4 +1,4 @@
-# py-jitx-pnp
+# jitx-pnp
 
 Generate pick-and-place (PnP) files from JITX XML board exports.
 
@@ -22,6 +22,14 @@ pick-and-place file listing every component's placement data:
 Requires Python 3.12+.
 
 ```bash
+pip install jitx-pnp
+```
+
+For development:
+
+```bash
+git clone https://github.com/JITx-Inc/jitx-pnp.git
+cd jitx-pnp
 pip install -e .
 ```
 
@@ -37,13 +45,13 @@ part number data.
 ### Command line
 
 ```
-python -m jitx_pnp <xml_file> [-o FILE] [-f {csv,tsv,txt}] [--split-sides]
+jitx-pnp <xml_file> [-o FILE] [-f {csv,tsv,txt}] [--split-sides]
 ```
 
 **Print CSV to stdout:**
 
 ```bash
-python -m jitx_pnp board.xml
+jitx-pnp board.xml
 ```
 
 ```
@@ -56,24 +64,24 @@ C10,39.292,70.994,90.000,04023D105KAT2A,Pkg0402,Top
 **Write to a file:**
 
 ```bash
-python -m jitx_pnp board.xml -o pnp.csv
+jitx-pnp board.xml -o pnp.csv
 ```
 
 **Tab-separated output:**
 
 ```bash
-python -m jitx_pnp board.xml -f tsv -o pnp.tsv
+jitx-pnp board.xml -f tsv -o pnp.tsv
 ```
 
 **Fixed-width text table:**
 
 ```bash
-python -m jitx_pnp board.xml -f txt
+jitx-pnp board.xml -f txt
 ```
 
 ```
-REF DES  X COORD  Y COORD  ROT      PN                     PACKAGE                   SIDE
--------  -------  -------  -------  ---------------------  ------------------------  ------
+REF DES  X COORD  Y COORD  ROT      PN                     PACKAGE  SIDE
+-------  -------  -------  -------  ---------------------  -------  ----
 C1       63.457   110.056  90.000   CGA2B3X7R1H103M050BB   Pkg0402  Top
 C10      39.292   70.994   90.000   04023D105KAT2A         Pkg0402  Top
 ...
@@ -82,16 +90,19 @@ C10      39.292   70.994   90.000   04023D105KAT2A         Pkg0402  Top
 **Split output by board side:**
 
 ```bash
-python -m jitx_pnp board.xml -o pnp.csv --split-sides
+jitx-pnp board.xml -o pnp.csv --split-sides
 ```
 
 This writes `pnp_top.csv` and `pnp_bottom.csv` (if components exist on that
 side), each without the Side column since it is implicit in the filename.
 
+The `python -m jitx_pnp` invocation also works as an alternative to the
+`jitx-pnp` command.
+
 ### Python API
 
 ```python
-from jitx_pnp.pnp import pick_and_place
+from jitx_pnp import pick_and_place
 
 # Return CSV string
 csv_text = pick_and_place("board.xml")
@@ -121,3 +132,7 @@ pick_and_place("board.xml", output_file="pnp.txt", fmt="txt", split_sides=True)
    joining to board instances by reference designator.
 3. Sorts components by reference designator and writes the output in the
    requested format.
+
+## License
+
+MIT
