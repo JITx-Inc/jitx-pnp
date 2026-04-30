@@ -10,7 +10,8 @@ import sys
 from jitx_pnp.pnp import pick_and_place
 
 
-def main():
+def main() -> None:
+    """Parse CLI arguments and run pick_and_place, writing to file or stdout."""
     parser = argparse.ArgumentParser(
         prog="jitx_pnp",
         description=(

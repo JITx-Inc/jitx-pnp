@@ -1,23 +1,47 @@
-
-
 # Ignore all hidden files/folders by default
 .*
 
 # Whitelist specific dotfiles/folders
 !.gitignore
+!.github/
 !.vscode/
 
-# Ignore everything in .venv
-.venv/*
+# Python virtual environments
+.venv/
+venv/
+env/
 
-.DS_Store
+# Python bytecode and cache
 __pycache__/
+*.pyc
+*.pyo
 
-# Data Cache - Files that don't need to be version controlled.
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Test / lint / type-check caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+
+# Editor / OS junk
+.DS_Store
+*.swp
+*.swo
+*.bak
+
+# JITX-specific (per-design caches and backups, not version controlled)
 designs/**/cache/
 designs/**/design-info/stable.design.backup*
 designs/**/design-info/physical-layout.design~
-
-# part cache does not need to be stored in Git
 parts-db/
-.venv/
+
+# Generated PnP outputs (regenerated from XML on demand)
+pnp_output.csv
