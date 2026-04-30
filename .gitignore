@@ -1,0 +1,47 @@
+# Ignore all hidden files/folders by default
+.*
+
+# Whitelist specific dotfiles/folders
+!.gitignore
+!.github/
+!.vscode/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Test / lint / type-check caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+
+# Editor / OS junk
+.DS_Store
+*.swp
+*.swo
+*.bak
+
+# JITX-specific (per-design caches and backups, not version controlled)
+designs/**/cache/
+designs/**/design-info/stable.design.backup*
+designs/**/design-info/physical-layout.design~
+parts-db/
+
+# Generated PnP outputs (regenerated from XML on demand)
+pnp_output.csv
