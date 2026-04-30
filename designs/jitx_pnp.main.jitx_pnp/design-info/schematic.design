@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "assignments": [
+  ],
+  "id-mapping": {
+    "boxes": [
+      [{"id":"11111111112HjfLcMC","unit-id":0},2],
+      [{"id":"EzYrEFDC8oFsmApiBs1SyF","unit-id":0},5],
+      [{"id":"CZTKiZ9DGwVURQkmpBchGk","unit-id":0},8]
+    ],
+    "inst-boxes": [
+      [{"id":"DBNsfWxJB7k9Qe6NrLjGTv","unit-id":0},9],
+      [{"id":"CrwW3rvYmTr3BDwAotFjxE","unit-id":0},10]
+    ],
+    "annotation-boxes": [
+    ],
+    "nets": [
+    ],
+    "ports": [
+      ["11111111112JHnNYKf",0],
+      ["11111111112JPT5Kvc",1],
+      ["11111111112Hy1GNaA",3],
+      ["11111111112HpqUfYB",4],
+      ["11111111112J9UGuf6",6],
+      ["11111111112J4fvyNC",7]
+    ]
+  },
+  "design": {
+    "input": {
+      "paper-size": {
+        "x": 200,
+        "y": 125
+      },
+      "label-style": {
+        "type": "monospace-label-style",
+        "height-in-grid-units": 0.8,
+        "char-width-relative-to-height": 0.6
+      },
+      "boxes": [
+        {"id":2,"sw":{"x":-1,"y":-3},"ne":{"x":5,"y":3},"ports":[{"id":0,"pt":{"x":0,"y":3},"dir":"Up","tag":"AnyTag"},{"id":1,"pt":{"x":0,"y":-3},"dir":"Down","tag":"AnyTag"}],"orientation":{"type":"any-rotation"}},
+        {"id":5,"sw":{"x":-1,"y":-3},"ne":{"x":5,"y":3},"ports":[{"id":3,"pt":{"x":0,"y":3},"dir":"Up","tag":"AnyTag"},{"id":4,"pt":{"x":0,"y":-3},"dir":"Down","tag":"AnyTag"}],"orientation":{"type":"any-rotation"}},
+        {"id":8,"sw":{"x":-1,"y":-3},"ne":{"x":5,"y":3},"ports":[{"id":6,"pt":{"x":0,"y":3},"dir":"Up","tag":"AnyTag"},{"id":7,"pt":{"x":0,"y":-3},"dir":"Down","tag":"AnyTag"}],"orientation":{"type":"any-rotation"}}
+      ],
+      "insts": [
+        {"id":9,"box":5,"group":null},
+        {"id":10,"box":8,"group":null}
+      ],
+      "nets": [
+        {"id":15,"name":{"type":"ref","value":["p2"]},"refs":[{"inst":10,"port":7},{"inst":9,"port":4}],"labeled?":{"type":"no-label"}},
+        {"id":16,"name":{"type":"ref","value":["p1"]},"refs":[{"inst":10,"port":6},{"inst":9,"port":3}],"labeled?":{"type":"no-label"}}
+      ],
+      "shorts": [
+      ],
+      "schematic-group-order": [
+      ]
+    },
+    "sheets": [
+      {"id":28,"title":null,"groups":[{"id":17,"groups":[null],"border":{"sw":{"x":91,"y":56},"ne":{"x":108,"y":68}},"insts":[{"inst":9,"pose":{"center":{"x":98,"y":62},"angle":180,"flip-x?":false}},{"inst":10,"pose":{"center":{"x":105,"y":62},"angle":180,"flip-x?":false}}],"children":[]}],"nets":[{"id":23,"net":15,"refs":[{"inst":9,"port":4},{"inst":10,"port":7}],"wires":[{"id":33,"a":{"x":98,"y":66},"b":{"x":105,"y":66}},{"id":39,"a":{"x":98,"y":65},"b":{"x":98,"y":66}},{"id":40,"a":{"x":105,"y":65},"b":{"x":105,"y":66}}],"label?":null},{"id":18,"net":16,"refs":[{"inst":9,"port":3},{"inst":10,"port":6}],"wires":[{"id":29,"a":{"x":98,"y":58},"b":{"x":105,"y":58}},{"id":31,"a":{"x":98,"y":58},"b":{"x":98,"y":59}},{"id":32,"a":{"x":105,"y":58},"b":{"x":105,"y":59}}],"label?":null}]}
+    ],
+    "hierarchical-diagram": null
+  }
+}
