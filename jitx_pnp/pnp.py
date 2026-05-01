@@ -1,3 +1,5 @@
+"""Convert JITX XML board exports into pick-and-place files (CSV/TSV/text)."""
+
 import csv
 import io
 import logging
