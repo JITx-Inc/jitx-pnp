@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 authors = [
-  { name = "JITX" },
+  { name = "JITX", email = "b.gupta@jitx.com" },
 ]
 keywords = ["jitx", "pick-and-place", "pnp", "pcb", "electronics", "manufacturing"]
 classifiers = [
@@ -24,6 +24,14 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
 
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+  "build>=1.2",
+  "twine>=5",
+]
+
 [project.scripts]
 jitx-pnp = "jitx_pnp.__main__:main"
 
@@ -35,10 +43,29 @@ Issues = "https://github.com/JITx-Inc/jitx-pnp/issues"
 [tool.hatch.build.targets.sdist]
 exclude = [
   ".vscode/",
+  ".github/",
   "3d-models/",
   "designs/",
   "parts-db/",
   ".ruff_cache/",
+  ".pytest_cache/",
   ".gitignore",
+  "build/",
+  "dist/",
   "pnp_output.csv",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["jitx_pnp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["designs", "3d-models", "parts-db"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]

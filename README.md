@@ -138,6 +138,37 @@ pick_and_place("board.xml", output_file="pnp.txt", fmt="txt", split_sides=True)
 3. Sorts components by reference designator and writes the output in the
    requested format.
 
+## Development
+
+Install the package with dev dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Run the test suite:
+
+```bash
+pytest
+```
+
+Lint and format checks:
+
+```bash
+ruff check .
+ruff format --check .
+```
+
+Build the distribution:
+
+```bash
+python -m build
+twine check dist/*
+```
+
+CI runs all three on every push (Python 3.12 and 3.13). See
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## License
 
 MIT
