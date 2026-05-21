@@ -1,0 +1,33 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "RunAll JITX Designs in Project",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "jitx",
+            "args": [
+                "build-all",
+                "--port",
+                "${command:jitx.get-websocket-port}",
+                "--generate-config"
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Run jitx_pnp.main.jitx_pnp",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "jitx",
+            "args": [
+                "build",
+                "jitx_pnp.main.jitx_pnp",
+                "--port",
+                "${command:jitx.get-websocket-port}"
+            ],
+            "justMyCode": false
+        }
+    ]
+}
