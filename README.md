@@ -1,5 +1,7 @@
 # jitx-pnp
 
+> **Note:** This code is provided on a best-effort basis with no guarantee of future compatibility. Newer versions of JITX are expected to deprecate this functionality.
+
 Generate pick-and-place (PnP) files from JITX XML board exports.
 
 ## Overview
