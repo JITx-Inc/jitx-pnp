@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run jitx_pnp.main.jitx_pnp",
+            "type": "process",
+            "command": "python",
+            "args": [
+                "-m",
+                "jitx",
+                "build",
+                "jitx_pnp.main.jitx_pnp",
+                "--port",
+                "${command:jitx.get-websocket-port}"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            },
+            "detail": "JITX Build task"
+        },
+        {
+            "label": "Run All JITX Designs in Project",
+            "type": "process",
+            "command": "python",
+            "args": [
+                "-m",
+                "jitx",
+                "build-all",
+                "--port",
+                "${command:jitx.get-websocket-port}"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            },
+            "detail": "JITX Build task"
+        }
+    ]
+}
