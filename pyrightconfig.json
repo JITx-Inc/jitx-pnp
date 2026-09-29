@@ -1,0 +1,5 @@
+{
+  "include": ["src", "tests", "examples"],
+  "exclude": ["**/__pycache__", "dist", "tmp"],
+  "pythonVersion": "3.12"
+}

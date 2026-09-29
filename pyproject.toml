@@ -1,16 +1,30 @@
+# pyproject.toml
+
 [build-system]
-requires = ["hatchling>=1.27.0,<2.0"]
+requires = [
+  "hatchling>=1.27.0,<2.0",
+  "hatch-vcs>=0.5.0,<0.6.0",
+  "ruff==0.14.9",
+  "pyright>=1.1.398,<1.2.0",
+]
 build-backend = "hatchling.build"
 
 [project]
-name = "jitx-pnp"
-version = "0.1.0"
-description = "Generate pick-and-place files from JITX XML board exports"
+name = "jitxlib-pnp"
+dynamic = ["version"]
+description = "Export pick-and-place files from JITX designs"
 readme = "README.md"
 license = "MIT"
+dependencies = [
+  # 4.4 is the first release on the public channel carrying everything this
+  # reads: the `jitx-plugin` export interface, `RuntimeDesign.query`,
+  # `Placement.side` composed through the multiply chain, and the
+  # `soldered` / `in_bom` flags resolved during capture.
+  "jitx>=4.4,<5",
+]
 requires-python = ">=3.12"
 authors = [
-  { name = "JITX" },
+  { name = "JITX", email = "b.gupta@jitx.com" },
 ]
 keywords = ["jitx", "pick-and-place", "pnp", "pcb", "electronics", "manufacturing"]
 classifiers = [
@@ -24,21 +38,68 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
 
-[project.scripts]
-jitx-pnp = "jitx_pnp.__main__:main"
+[project.entry-points.jitx-plugin]
+export = "jitxlib.pnp.plugin"
 
 [project.urls]
 Homepage = "https://github.com/JITx-Inc/jitx-pnp"
 Repository = "https://github.com/JITx-Inc/jitx-pnp"
 Issues = "https://github.com/JITx-Inc/jitx-pnp/issues"
 
-[tool.hatch.build.targets.sdist]
-exclude = [
-  ".vscode/",
-  "3d-models/",
-  "designs/",
-  "parts-db/",
-  ".ruff_cache/",
-  ".gitignore",
-  "pnp_output.csv",
+[tool.hatch.build.targets.wheel]
+packages = ["src/jitxlib"]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0+undefined"
+
+[tool]
+
+# tests: run "hatch test"
+[tool.hatch.envs.hatch-test]
+randomize = true
+parallel = false
+installer = "pip"
+extra-args = ["-vv"]
+dependencies = [
+  "coverage[toml]",
+  "pytest",
+  "pytest-cov",
 ]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.12", "3.13"]
+
+# formatting: run "hatch fmt --check"
+[tool.hatch.envs.hatch-static-analysis]
+dependencies = ["ruff==0.14.9"]
+config-path = "none"  # don't use hatch defaults
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "A", "B", "C"]
+# E501 line too long - let ruff format handle that
+# A002 argument shadowing a builtin (`format`, which is what the flag is called)
+# A005 builtin module shadowing (false positive)
+# C901 mccabe complexity check, limits to 10
+ignore = ["E501", "A005", "C901", "A002"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# pyright: run "hatch run types:check"
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "pyright>=1.1.0",
+  # pyrightconfig.json type-checks tests/ and examples/ too
+  "pytest",
+]
+
+[tool.hatch.envs.types.scripts]
+check = "pyright ."
+stats = "pyright --stats ."
