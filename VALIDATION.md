@@ -5,18 +5,25 @@ rather than restating results in a commit message.
 
 ## Baseline
 
-Checked November 2, 2026, against the released 4.6 wheels on the public
-index. The Python packages and the native runtime carry independent version
-sequences; a lockfile does not select the native runtime.
+Checked November 2, 2026, against the released 4.6 artifacts. The Python
+packages and the native runtime carry independent version sequences, and a
+lockfile does not select the native runtime: this used `--prod`, which is
+the channel a customer on the release build has.
+
+`jitx` 4.6.0 is on the JITX main feed. Public PyPI still serves 4.4.3, so
+installing from PyPI alone will not satisfy the floor this package declares
+until 4.6 is mirrored there.
 
 | Artifact | Version |
 | --- | --- |
 | Python | 3.12.13 |
 | `jitx` | 4.6.0 |
 | `jitxcore` | 4.6.0 |
-| Native runtime | 4.6.0-rc.16, from `jitx runtime introspect` |
+| Native runtime | 4.6.0, from `jitx runtime update --prod`, confirmed by `jitx runtime introspect` as `release` |
 
 The previous record for this package was `jitx` 4.4.2 with native 4.4.1.
+An earlier pass of this migration ran on native 4.6.0-rc.16; the results
+below are from the production 4.6.0 runtime that replaced it.
 
 ## What 4.6 changed under this exporter
 

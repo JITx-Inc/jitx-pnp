@@ -147,8 +147,12 @@ variable, and it needed a human to run a menu before the tool could start.
 
 ## Compatibility
 
-Tested against `jitx` 4.6.0, `jitxcore` 4.6.0 and native runtime 4.6.0-rc.16
-on Python 3.12. `VALIDATION.md` records the commands and results.
+Tested against the 4.6.0 release: `jitx` 4.6.0, `jitxcore` 4.6.0 and the
+production native runtime 4.6.0, on Python 3.12. `VALIDATION.md` records the
+commands and results.
+
+`jitx` 4.6.0 is on the JITX package feed; public PyPI still serves 4.4.3, so
+a PyPI-only install will not satisfy the floor until 4.6 is mirrored.
 
 4.6 moved `RuntimeDesign.root`, `.nets` and `.layers` to read-only
 properties and left the callable `nets()` / `layers()` forms as warning
