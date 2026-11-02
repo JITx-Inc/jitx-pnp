@@ -11,8 +11,10 @@ lockfile does not select the native runtime: this used `--prod`, which is
 the channel a customer on the release build has.
 
 `jitx` 4.6.0 is on the JITX main feed. Public PyPI still serves 4.4.3, so
-installing from PyPI alone will not satisfy the floor this package declares
-until 4.6 is mirrored there.
+resolving `jitx>=4.6` needs that feed as an extra index until 4.6 is
+mirrored. CI sets `PIP_EXTRA_INDEX_URL` to it, which is the same default
+`jitx-inc/pybuild-action` carries; the feed is anonymously readable, so no
+credential is involved.
 
 | Artifact | Version |
 | --- | --- |
@@ -43,6 +45,9 @@ diagnostics. This exporter reads none of them. A column that needs one is a
 reason to revisit this list.
 
 ## Commands and results
+
+Each was also run with the pip configuration neutralized and the index
+supplied only through `PIP_EXTRA_INDEX_URL`, which is how CI resolves it.
 
 ```console
 hatch test              48 passed

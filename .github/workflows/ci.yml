@@ -5,6 +5,13 @@ on:
   pull_request:
     branches: [main]
 
+# jitx releases to the JITX feed; public PyPI lags it. Without this, pip
+# resolves `jitx>=4.6` against PyPI alone and finds 4.4.3. The feed is
+# anonymously readable, and it is the same default `jitx-inc/pybuild-action`
+# uses, which is what the sibling exporters build with.
+env:
+  PIP_EXTRA_INDEX_URL: https://pypi.jitx.com/jitx/main/+simple
+
 jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})

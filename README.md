@@ -151,8 +151,14 @@ Tested against the 4.6.0 release: `jitx` 4.6.0, `jitxcore` 4.6.0 and the
 production native runtime 4.6.0, on Python 3.12. `VALIDATION.md` records the
 commands and results.
 
-`jitx` 4.6.0 is on the JITX package feed; public PyPI still serves 4.4.3, so
-a PyPI-only install will not satisfy the floor until 4.6 is mirrored.
+`jitx` 4.6.0 is on the JITX package feed; public PyPI still serves 4.4.3,
+so installing needs that feed as an extra index until 4.6 is mirrored:
+
+```console
+pip install --extra-index-url https://pypi.jitx.com/jitx/main/+simple -e .
+```
+
+CI sets the same index through `PIP_EXTRA_INDEX_URL`.
 
 4.6 moved `RuntimeDesign.root`, `.nets` and `.layers` to read-only
 properties and left the callable `nets()` / `layers()` forms as warning
