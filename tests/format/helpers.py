@@ -17,7 +17,8 @@ def part(
     package: str = "Land",
     side: str = TOP,
 ) -> Part:
-    """A placement with everything but the designator defaulted."""
+    # A placement with everything but the designator defaulted, so a test
+    # states only the fields it is about.
     return Part(
         designator=designator,
         x=x,

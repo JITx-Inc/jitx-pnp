@@ -7,6 +7,8 @@ Distributed as `jitxlib-pnp`, importable as `jitxlib.pnp`. It registers a
 built design - there is no intermediate file and no IDE step, so it runs in
 CI.
 
+Requires `jitx>=4.6`.
+
 ## Install
 
 ```console
@@ -142,6 +144,17 @@ variable, and it needed a human to run a menu before the tool could start.
 - Package names come from the design now, so a landpattern reads as
   `Chip0402` rather than as the `LANDPATTERN0402` the XML flow generated.
 - Parts that are not soldered used to be in the file and are not any more.
+
+## Compatibility
+
+Tested against `jitx` 4.6.0, `jitxcore` 4.6.0 and native runtime 4.6.0-rc.16
+on Python 3.12. `VALIDATION.md` records the commands and results.
+
+4.6 moved `RuntimeDesign.root`, `.nets` and `.layers` to read-only
+properties and left the callable `nets()` / `layers()` forms as warning
+shims. This exporter calls none of them, and its suite turns deprecation and
+runtime warnings into failures so it stays that way. The rows it writes
+still match the ones `examples/README.md` recorded before the move.
 
 ## Development
 

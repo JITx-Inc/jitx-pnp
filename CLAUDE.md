@@ -5,9 +5,10 @@ jitx-plugin export entry point, registered as `pnp`. It is distributed as
 `jitxlib-pnp` and imports as `jitxlib.pnp`.
 
 `jitxlib-gerber` is the template for everything structural here - the plugin
-module, the two-layer split, the packaging and the test shapes - and
-`jitxlib-odb` is the other exporter on the same 4.4 jitx floor. Read
-whichever is closer to the change you are making before inventing something.
+module, the two-layer split, the packaging and the test shapes. Read it
+before inventing something. `jitx-exporter-guidance` is the cross-exporter
+reference for what each JITX release changes under an exporter; read its
+handbook and compatibility record before a version bump.
 
 The repo carried a standalone XML parser until the migration to this layout.
 It is gone: XML export is legacy in py-jitx 4.4 and gated behind
@@ -31,6 +32,31 @@ walk.
 Imports in `__init__.py` are absolute. A relative `from .format import` there
 binds `format` in the file, which is also the name of the flag that selects a
 layout, and pyright reads the two as one symbol.
+
+# Targeting JITX 4.6
+
+The floor is `jitx>=4.6,<5`. What 4.6 changed that reaches this package:
+
+- `RuntimeDesign.root`, `.nets` and `.layers` are read-only properties
+  backed by private submission state. The test stand-in shadows `root` with
+  a property of its own rather than assigning it, and does not call the base
+  `__init__`, whose state object wants a `ReverseMapper` there is no runtime
+  to produce. `query`, `submit` and `capture` are still methods.
+- The callable `nets()` / `layers()` shims emit `RuntimeWarning`. Nothing
+  here calls them, and `filterwarnings` in `pyproject.toml` makes that
+  category an error so it cannot creep in quietly.
+- `jitx.units.valuestring` arrived, and is what renders the `Value` column.
+  Its sibling `rkm_code` is always ASCII but drops the unit - `100n` does
+  not say farads or henries - so it is not used here.
+- The CLI's default log level moved from NOTICE to INFO. Results still go
+  out through `jitx.log.notice`, which is above both.
+
+Nothing in the exported data moved: `query`, `Placement.side` composition,
+and the `soldered` flag behave as they did on 4.4. 4.6 contracts that do not
+reach a placement file - canonical net names through `design.nets.find`,
+implicit `PadMapping` / `SymbolMapping` capture, via spans and backdrills,
+routing diagnostics - are in the guidance handbook if this ever grows a
+column that needs them.
 
 # Transforms
 
@@ -73,10 +99,20 @@ placement row, pyright convention notes, and design-rationale asides.
 Docstrings surface as hover text in language servers, so keep them about use,
 not mechanism.
 
-Use Google-style `Args:`. Do not repeat types in prose; they belong in the
-signature. `Returns:` and `Raises:` may be omitted unless something is
-non-obvious. Be terse. No bold, no em-dashes, no emoji - in docstrings,
-commit messages and PR descriptions alike.
+Use Google-style `Args:` and `Returns:` on every public callable, which is
+what `jitx-engineering-review` checks. Do not repeat types in prose; they
+belong in the signature, and neither section is a place to restate a default.
+Say what a parameter constrains and what the caller actually gets: that
+`legal_stem` can fold two names together, that `build`'s order is not one to
+rely on. If an entry would only name the argument again, the docstring is
+not the problem - find the thing about it a caller could get wrong.
+
+Test rationale goes in `#` comments, not docstrings. A test is not shipped
+documentation, and an `Args:` entry for a pytest fixture says nothing.
+
+Be terse. No bold, no em-dashes, no emoji - in docstrings, commit messages
+and PR descriptions alike. No tool-advertising trailers in commits either;
+disclose AI authorship plainly in the PR body instead.
 
 Type-annotate everything except `self`. `type: ignore` and `noqa` are
 prohibited unless justified in an adjacent comment. Do not lower pyright
@@ -122,7 +158,11 @@ python -m jitx design export pnp [--output <path>] [--format csv|tsv|txt] \
 # Validation
 
 - `hatch test`, `hatch fmt --check`, `hatch run types:check` must all be
-  clean.
+  clean. Deprecation and runtime warnings fail the suite; do not silence a
+  category to get a run green.
+- `VALIDATION.md` records the versions and commands behind the current
+  compatibility claim. Update it on a version bump rather than restating
+  results in a commit message.
 - `tests/format/` imports no jitx and covers the writers and the rotation
   rule. `tests/extract/` uses `jitx.test.TestCase` with a `RuntimeDesign`
   subclass over the real `jitx.query`, so the walk runs the same code an

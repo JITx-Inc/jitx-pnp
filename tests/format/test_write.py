@@ -129,23 +129,19 @@ def test_an_existing_file_is_kept_unless_replacing_it_was_asked_for(tmp_path):
     assert "RefDes" in out.read_text()
 
 
+# `--output pnp.csv --format txt` is fixed-width text in `pnp.csv`. The suffix
+# is what the caller asked for, and renaming it under them to match the layout
+# would write a file they did not name.
 def test_the_extension_comes_from_the_path_not_from_the_format(tmp_path):
-    """`--output pnp.csv --format txt` is fixed-width text in `pnp.csv`.
-
-    The suffix is what the caller asked for, and renaming it under them to
-    match the layout would write a file they did not name.
-    """
     out = tmp_path / "pnp.csv"
     write([part("C1")], out, format=TableFormat.TXT)
     assert out.read_text().startswith("REF DES")
 
 
+# The guard runs over the whole set before any of it is written. Top sorts
+# first, so a conflict on the bottom file is the case where a file-by-file
+# check would already have written the top one.
 def test_a_refused_split_leaves_no_half_an_export_behind(tmp_path):
-    """The guard runs over the whole set before any of it is written.
-
-    Top sorts first, so a conflict on the bottom file is the case where a
-    file-by-file check would already have written the top one.
-    """
     out = tmp_path / "pnp.csv"
     (tmp_path / "pnp_bottom.csv").write_text("keep me")
     with pytest.raises(ValueError, match="already exists"):

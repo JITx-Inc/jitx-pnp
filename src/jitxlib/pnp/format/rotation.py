@@ -39,6 +39,13 @@ the way `jitxlib-jlcpcb` owns the JLCPCB rule.
 def resolve(value: str | BottomRotation) -> BottomRotation:
     """Resolve the `--bottom-rotation` flag.
 
+    Args:
+        value: a convention name, or a `BottomRotation` already resolved,
+            which passes through.
+
+    Returns:
+        The convention to hand to `rotation`.
+
     Raises:
         ValueError: the convention is not one this exporter writes, listing
             the ones it does.
@@ -71,8 +78,14 @@ def rotation(degrees: float, side: str, convention: BottomRotation) -> float:
     Args:
         degrees: the design's own angle, counter-clockwise, viewed from the top.
         side: `"Top"` or `"Bottom"`, as carried on a
-            :py:class:`~jitxlib.pnp.format.model.Part`.
+            :py:class:`~jitxlib.pnp.format.model.Part`. Anything that is not
+            `"Bottom"` is treated as the top side, which is the convention
+            every rule agrees on.
         convention: how to write a bottom-side angle.
+
+    Returns:
+        The angle, normalized into a single turn, so the result is always
+        in `[0, 360)` whatever the design's own angle was.
     """
     if side != BOTTOM or convention is BottomRotation.NATIVE:
         return degrees % 360.0

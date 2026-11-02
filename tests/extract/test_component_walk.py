@@ -141,12 +141,22 @@ class StaticDesign[T: Design](RuntimeDesign[T]):
 
     The query is the real one - `jitx.query.query`, which is what
     `RuntimeDesign.query` delegates to - so transformers, `opaque` and the
-    accumulated transform behave as they do in an export. `nets` is left
-    alone because a placement file has no use for it.
+    accumulated transform behave as they do in an export. `nets` and
+    `layers` are left alone because a placement file has no use for them;
+    reaching them on this stand-in would find no runtime state.
     """
 
+    # `root` and `name` are read-only properties on the base, backed by the
+    # `_DesignState` a real submission builds, so they are shadowed rather
+    # than assigned. The base `__init__` is deliberately not called: its
+    # state object is private and wants a ReverseMapper this has no runtime
+    # to produce.
     def __init__(self, root: T) -> None:
-        self.root = root
+        self._root = root
+
+    @property
+    def root(self) -> T:
+        return self._root
 
     @property
     def name(self) -> str:

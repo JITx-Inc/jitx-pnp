@@ -6,6 +6,8 @@ mistake, so the discriminating cases below all use 45 degrees.
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from jitxlib.pnp.format import BOTTOM, TOP
@@ -52,6 +54,39 @@ def test_the_conventions_agree_only_where_the_algebra_says_they_do():
 def test_every_angle_normalizes_into_a_single_turn():
     assert rotation(-45.0, TOP, BottomRotation.NATIVE) == 315.0
     assert rotation(450.0, TOP, BottomRotation.NATIVE) == 90.0
+
+
+# The docstring on `rotation` derives each convention from the frame it
+# targets. This checks the derivation against those frames as matrices rather
+# than re-asserting the formula, so a plausible-looking wrong sign in either
+# the code or the docstring fails here.
+def test_each_convention_matches_the_frame_its_docstring_claims():
+    def turn(degrees):
+        radians = math.radians(degrees)
+        cos, sin = math.cos(radians), math.sin(radians)
+        return ((cos, -sin), (sin, cos))
+
+    def compose(a, b):
+        return tuple(
+            tuple(sum(a[i][k] * b[k][j] for k in range(2)) for j in range(2))
+            for i in range(2)
+        )
+
+    def same(a, b):
+        return all(abs(a[i][j] - b[i][j]) < 1e-9 for i in range(2) for j in range(2))
+
+    mirror_x = ((-1.0, 0.0), (0.0, 1.0))  # what JITX sets for a bottom placement
+    mirror_y = ((1.0, 0.0), (0.0, -1.0))  # the zero `negate` and `flip` target
+
+    for degrees in (0, 30, 45, 90, 137, 180, 270, 315):
+        placement = compose(turn(degrees), mirror_x)
+
+        flipped = rotation(degrees, BOTTOM, BottomRotation.FLIP)
+        assert same(placement, compose(turn(flipped), mirror_y))
+
+        # the target frame writes `180 - t`, which the docstring says is `-r`
+        negated = rotation(degrees, BOTTOM, BottomRotation.NEGATE)
+        assert (180 - flipped) % 360 == pytest.approx(negated)
 
 
 def test_an_unknown_convention_names_the_ones_that_exist():

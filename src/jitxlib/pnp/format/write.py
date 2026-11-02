@@ -35,6 +35,13 @@ class TableFormat(StrEnum):
 def resolve(value: str | TableFormat) -> TableFormat:
     """Resolve the `--format` flag.
 
+    Args:
+        value: a format name, or a `TableFormat` already resolved, which
+            passes through.
+
+    Returns:
+        The format to hand to `render` or `write`.
+
     Raises:
         ValueError: the format is not one this exporter writes, listing the
             ones it does.
@@ -105,8 +112,12 @@ def render(
     Args:
         parts: the placements to render, in any order.
         fields: which columns to emit; the sequence order is the column
-            order. Defaults to every column.
+            order.
         bottom_rotation: how to write a bottom-side angle.
+
+    Returns:
+        The whole table as one string, header included, with the line
+        endings the format calls for rather than the platform's.
     """
     rows = [_row(part, bottom_rotation) for part in parts]
     rows.sort(key=lambda row: natural_sort_key(row["RefDes"]))

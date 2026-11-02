@@ -5,6 +5,27 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Targets `jitx>=4.6,<5`. 4.6 made `RuntimeDesign.root`, `.nets` and
+  `.layers` read-only properties, which the test stand-in now shadows rather
+  than assigns; the exported rows are unchanged.
+- The `Value` column goes through `jitx.units.valuestring`, which arrived in
+  4.6, instead of formatting the quantity here. Non-ASCII unit symbols are
+  still spelled out, so a resistor reads `4.7 kohm`.
+- Deprecation and runtime warnings fail the test suite, so a call into a
+  deprecated `nets()` / `layers()` shim cannot pass review quietly.
+
+### Added
+
+- `VALIDATION.md`, recording the versions, commands and results behind the
+  compatibility claim.
+
+---
+
+The entries below cover the rewrite from the XML parser, which has not been
+released yet.
+
 Rewritten as a `jitx` CLI export plugin. This is a breaking change in every
 direction: the input, the command, and the columns.
 

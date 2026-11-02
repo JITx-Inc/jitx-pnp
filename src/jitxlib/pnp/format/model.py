@@ -71,14 +71,33 @@ _FORMULA_LEAD = ("=", "+", "-", "@")
 
 
 def natural_sort_key(value: str) -> tuple[str | int, ...]:
-    """Split a designator into text and integer runs, so C2 precedes C10."""
+    """Split a designator into text and integer runs, so C2 precedes C10.
+
+    Args:
+        value: a reference designator. Any string sorts; one with no digits
+            compares as a single text run.
+
+    Returns:
+        A sort key, not a rendering. Its parts alternate text and integer,
+        so two keys only compare if the designators share a prefix shape.
+    """
     return tuple(
         int(piece) if piece.isdigit() else piece for piece in _DIGITS.split(value)
     )
 
 
 def sanitize(value: str) -> str:
-    """Quote a field a spreadsheet would otherwise evaluate as a formula."""
+    """Quote a field a spreadsheet would otherwise evaluate as a formula.
+
+    Args:
+        value: one cell's text. Only its first character decides; a formula
+            character anywhere else is left alone.
+
+    Returns:
+        The text, prefixed with an apostrophe if it needed quoting. The
+        apostrophe is part of the field, so a reader that is not a
+        spreadsheet sees it too.
+    """
     if value and value[0] in _FORMULA_LEAD:
         return "'" + value
     return value
@@ -89,6 +108,15 @@ def legal_stem(name: str) -> str:
 
     Dots separate a module path rather than a suffix, so they become
     underscores instead of leaving a name whose extension is the class.
+
+    Args:
+        name: a design name, usually `module.path.DesignClass`.
+
+    Returns:
+        A stem of alphanumerics, dashes and underscores, never empty: a
+        name with nothing usable in it becomes `design`. It carries no
+        extension, and distinct names can collide once their punctuation
+        is folded.
     """
     stem = "".join(
         character if character.isalnum() or character in "-_" else "_"

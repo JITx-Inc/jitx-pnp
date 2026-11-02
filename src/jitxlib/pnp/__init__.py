@@ -35,10 +35,10 @@ __all__ = ["BottomRotation", "Part", "TableFormat", "pick_and_place"]
 
 
 def _output(output: Path | str | None, design_name: str, format: TableFormat) -> Path:
-    """The file to write: the one given, or `<cwd>/<scrubbed name>-pnp.<ext>`.
+    """The file to write: the one given, or one named after the design.
 
-    The default is named after the design, so exporting two boards into one
-    directory does not have the second overwrite the first.
+    A name of its own is what keeps two boards exported into the same
+    directory from overwriting each other.
     """
     from jitxlib.pnp.format import legal_stem
 

@@ -53,8 +53,12 @@ class PnpExport(jitx.plugin.Export):
         that is known, so guarding it here would reject a run over a file it
         was never going to write.
 
-        The signature carries every flag regardless, because the CLI passes
-        the same keywords to this and to `export`.
+        Args:
+            output: the only flag acted on here. The rest are carried
+                because the CLI passes the same keywords to this and to
+                `export`.
+            overwrite: permission to replace what is already there.
+            split_sides: whether the paths are decided later.
         """
         if output is None or overwrite or split_sides:
             return

@@ -16,11 +16,13 @@ description = "Export pick-and-place files from JITX designs"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-  # 4.4 is the first release on the public channel carrying everything this
-  # reads: the `jitx-plugin` export interface, `RuntimeDesign.query`,
-  # `Placement.side` composed through the multiply chain, and the
-  # `soldered` / `in_bom` flags resolved during capture.
-  "jitx>=4.4,<5",
+  # 4.6 made `RuntimeDesign.root` a read-only property backed by private
+  # submission state, which the test stand-in shadows rather than assigns,
+  # and it is where `jitx.units.valuestring` arrived. The exported data
+  # itself - `RuntimeDesign.query`, `Placement.side` composed through the
+  # multiply chain, the `soldered` flag resolved during capture - is
+  # unchanged from 4.4.
+  "jitx>=4.6,<5",
 ]
 requires-python = ">=3.12"
 authors = [
@@ -69,6 +71,17 @@ dependencies = [
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.12", "3.13"]
+
+[tool.pytest.ini_options]
+# 4.6 turned `RuntimeDesign.nets` and `.layers` into properties and left the
+# callable forms as shims that warn. Nothing here calls them, and a warning
+# is how that would first show up, so the categories are errors rather than
+# console noise a test run scrolls past.
+filterwarnings = [
+  "error::DeprecationWarning",
+  "error::PendingDeprecationWarning",
+  "error::RuntimeWarning",
+]
 
 # formatting: run "hatch fmt --check"
 [tool.hatch.envs.hatch-static-analysis]

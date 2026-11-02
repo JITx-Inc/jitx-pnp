@@ -18,7 +18,7 @@ from jitx.layerindex import Side
 from jitx.placement import Placement
 from jitx.plugin.export import ExportError
 from jitx.proxy import typeof
-from jitx.units import PlainQuantity
+from jitx.units import valuestring
 
 from ..format import BOTTOM, TOP, Part
 
@@ -58,11 +58,13 @@ def _package(component: Any) -> str:
     return typeof(landpattern if landpattern is not None else component).__name__
 
 
-# Pint's short unit symbols are the ones an engineer reads, but two of them
-# are not ASCII, and between them they cover most of the passives on a board.
-# Assembly-house upload forms are not reliably UTF-8, so these are spelled the
-# way `jitx.units` names them - `uF`, `ohm`, `kohm` - which is also how the
-# design that produced the value spells it.
+# `valuestring` renders a quantity with its short unit symbol, and two of
+# those symbols are not ASCII. Between them they cover most of the passives
+# on a board, and assembly-house upload forms are not reliably UTF-8, so they
+# are spelled the way `jitx.units` names them - `uF`, `ohm`, `kohm` - which
+# is also how the design that produced the value spells it. `rkm_code` is the
+# framework's other renderer and is always ASCII, but it drops the unit
+# entirely: `100n` does not say whether it is farads or henries.
 _ASCII_UNITS = str.maketrans(
     {
         "\u00b5": "u",  # MICRO SIGN
@@ -75,15 +77,12 @@ _ASCII_UNITS = str.maketrans(
 def _value(component: Any) -> str:
     """The value label, in the compact spelling a fab file wants.
 
-    A `PlainQuantity` renders as "15 nanofarad" under `str`; pint's short
-    format gives "15 nF".
+    A quantity renders as "15 nanofarad" under `str`; this gives "15 nF".
     """
     value = component.value
     if value is None:
         return ""
-    if isinstance(value, PlainQuantity):
-        return f"{value:~}".translate(_ASCII_UNITS)
-    return str(value)
+    return valuestring(value).translate(_ASCII_UNITS)
 
 
 def _part(component: Any, trace: Any) -> Part:
@@ -133,6 +132,10 @@ def build(design: RuntimeDesign, *, include_unsoldered: bool = False) -> list[Pa
     Args:
         design: a captured `RuntimeDesign`.
         include_unsoldered: keep components marked as not soldered.
+
+    Returns:
+        One record per placed component, in no order a caller should rely
+        on; `render` sorts by designator.
 
     Raises:
         ExportError: a component to be placed has no reference designator or
