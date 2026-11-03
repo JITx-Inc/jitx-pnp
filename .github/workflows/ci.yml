@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+# jitx releases to the JITX feed; public PyPI lags it. Without this, pip
+# resolves `jitx>=4.6` against PyPI alone and finds 4.4.3. The feed is
+# anonymously readable, and it is the same default `jitx-inc/pybuild-action`
+# uses, which is what the sibling exporters build with.
+env:
+  PIP_EXTRA_INDEX_URL: https://pypi.jitx.com/jitx/main/+simple
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # hatch-vcs reads the version out of git history
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install hatch
+        run: pip install "hatch>=1.14,<2"
+      - name: Run pytest
+        run: hatch test
+
+  lint:
+    name: Lint and types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install hatch
+        run: pip install "hatch>=1.14,<2"
+      - name: ruff
+        run: hatch fmt --check
+      - name: pyright
+        run: hatch run types:check
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install build tools
+        run: pip install "hatch>=1.14,<2" "twine>=5"
+      - name: Build sdist and wheel
+        run: hatch build
+      - name: twine check dist artifacts
+        run: twine check dist/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
